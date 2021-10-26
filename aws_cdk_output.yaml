@@ -1,0 +1,310 @@
+Resources:
+  MyFirstBucketB8884501:
+    Type: AWS::S3::Bucket
+    Properties:
+      VersioningConfiguration:
+        Status: Enabled
+    UpdateReplacePolicy: Retain
+    DeletionPolicy: Retain
+    Metadata:
+      aws:cdk:path: test-cdk/MyFirstBucket/Resource
+  testvpc8985080E:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/21
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+      InstanceTenancy: default
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/Resource
+  testvpcpublicSubnet1Subnet7BCDDC7D:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.0.0/24
+      VpcId:
+        Ref: testvpc8985080E
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: test-cdk/test-vpc/publicSubnet1
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet1/Subnet
+  testvpcpublicSubnet1RouteTable465CD5DF:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: testvpc8985080E
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc/publicSubnet1
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet1/RouteTable
+  testvpcpublicSubnet1RouteTableAssociation1D27724D:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: testvpcpublicSubnet1RouteTable465CD5DF
+      SubnetId:
+        Ref: testvpcpublicSubnet1Subnet7BCDDC7D
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet1/RouteTableAssociation
+  testvpcpublicSubnet1DefaultRouteF9C151E8:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: testvpcpublicSubnet1RouteTable465CD5DF
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: testvpcIGW2C2BA83F
+    DependsOn:
+      - testvpcVPCGW7060AA15
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet1/DefaultRoute
+  testvpcpublicSubnet1EIP66871BAE:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc/publicSubnet1
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet1/EIP
+  testvpcpublicSubnet1NATGatewayF27A087C:
+    Type: AWS::EC2::NatGateway
+    Properties:
+      SubnetId:
+        Ref: testvpcpublicSubnet1Subnet7BCDDC7D
+      AllocationId:
+        Fn::GetAtt:
+          - testvpcpublicSubnet1EIP66871BAE
+          - AllocationId
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc/publicSubnet1
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet1/NATGateway
+  testvpcpublicSubnet2SubnetC35BC5E2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.1.0/24
+      VpcId:
+        Ref: testvpc8985080E
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: true
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: public
+        - Key: aws-cdk:subnet-type
+          Value: Public
+        - Key: Name
+          Value: test-cdk/test-vpc/publicSubnet2
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet2/Subnet
+  testvpcpublicSubnet2RouteTable2C61A6B3:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: testvpc8985080E
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc/publicSubnet2
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet2/RouteTable
+  testvpcpublicSubnet2RouteTableAssociationDA0D277E:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: testvpcpublicSubnet2RouteTable2C61A6B3
+      SubnetId:
+        Ref: testvpcpublicSubnet2SubnetC35BC5E2
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet2/RouteTableAssociation
+  testvpcpublicSubnet2DefaultRoute90DCE3DB:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: testvpcpublicSubnet2RouteTable2C61A6B3
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId:
+        Ref: testvpcIGW2C2BA83F
+    DependsOn:
+      - testvpcVPCGW7060AA15
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/publicSubnet2/DefaultRoute
+  testvpcprivateSubnet1Subnet2E35BD58:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.2.0/24
+      VpcId:
+        Ref: testvpc8985080E
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: test-cdk/test-vpc/privateSubnet1
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet1/Subnet
+  testvpcprivateSubnet1RouteTable1D8B9208:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: testvpc8985080E
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc/privateSubnet1
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet1/RouteTable
+  testvpcprivateSubnet1RouteTableAssociation6CDEA04D:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: testvpcprivateSubnet1RouteTable1D8B9208
+      SubnetId:
+        Ref: testvpcprivateSubnet1Subnet2E35BD58
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet1/RouteTableAssociation
+  testvpcprivateSubnet1DefaultRoute7B649A3C:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: testvpcprivateSubnet1RouteTable1D8B9208
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: testvpcpublicSubnet1NATGatewayF27A087C
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet1/DefaultRoute
+  testvpcprivateSubnet2Subnet60F9C8A0:
+    Type: AWS::EC2::Subnet
+    Properties:
+      CidrBlock: 10.0.3.0/24
+      VpcId:
+        Ref: testvpc8985080E
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: ""
+      MapPublicIpOnLaunch: false
+      Tags:
+        - Key: aws-cdk:subnet-name
+          Value: private
+        - Key: aws-cdk:subnet-type
+          Value: Private
+        - Key: Name
+          Value: test-cdk/test-vpc/privateSubnet2
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet2/Subnet
+  testvpcprivateSubnet2RouteTable790940DA:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId:
+        Ref: testvpc8985080E
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc/privateSubnet2
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet2/RouteTable
+  testvpcprivateSubnet2RouteTableAssociation5D307BB0:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId:
+        Ref: testvpcprivateSubnet2RouteTable790940DA
+      SubnetId:
+        Ref: testvpcprivateSubnet2Subnet60F9C8A0
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet2/RouteTableAssociation
+  testvpcprivateSubnet2DefaultRouteA62EEDD4:
+    Type: AWS::EC2::Route
+    Properties:
+      RouteTableId:
+        Ref: testvpcprivateSubnet2RouteTable790940DA
+      DestinationCidrBlock: 0.0.0.0/0
+      NatGatewayId:
+        Ref: testvpcpublicSubnet1NATGatewayF27A087C
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/privateSubnet2/DefaultRoute
+  testvpcIGW2C2BA83F:
+    Type: AWS::EC2::InternetGateway
+    Properties:
+      Tags:
+        - Key: Name
+          Value: test-cdk/test-vpc
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/IGW
+  testvpcVPCGW7060AA15:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId:
+        Ref: testvpc8985080E
+      InternetGatewayId:
+        Ref: testvpcIGW2C2BA83F
+    Metadata:
+      aws:cdk:path: test-cdk/test-vpc/VPCGW
+  testsecuritygroupCC071DFA:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: test-cdk/test-security-group
+      GroupName: test-security-group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 10.0.0.0/21
+          Description: from 10.0.0.0/21:22
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+      VpcId:
+        Ref: testvpc8985080E
+    Metadata:
+      aws:cdk:path: test-cdk/test-security-group/Resource
+  testec2:
+    Type: AWS::EC2::Instance
+    Properties:
+      AvailabilityZone: ap-northeast-1a
+      ImageId:
+        Ref: SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter
+      InstanceType: t3.micro
+      KeyName: testkey
+      SecurityGroupIds:
+        - Fn::GetAtt:
+            - testsecuritygroupCC071DFA
+            - GroupId
+      SubnetId:
+        Ref: testvpcprivateSubnet1Subnet2E35BD58
+      Tags:
+        - Key: Name
+          Value: testec2
+    Metadata:
+      aws:cdk:path: test-cdk/testec2
+  CDKMetadata:
+    Type: AWS::CDK::Metadata
+    Properties:
+      Analytics: v2:deflate64:H4sIAAAAAAAA/12QQW/CMAyFfwv3EAZIoN3Gqgn1gqIWcXc9T2SlCUocUBX1v5OsY5V28ufnJ+vZS7lcvcqX2Rvc/Rw/20VE60jGmgFbUVjj2QVkUZG3wSGJ4ssocNARk8vNczCIvCH6tYzvAVviPBxpEIQrGU9XzNpJFUKF5qKxDo0ZfRNVNjAdobnQpE/aznuLGlhb82fO8FGqXA7Ae2C6Qy+U07eE0+LSpMCJn4YxyW+343TuuSPDoiYMTnO/dzZcfzL8F8r0EzDp4mEQquezNYu13Mjt7NtrPXfBsO5IVmN9AFY5Z79gAQAA
+    Metadata:
+      aws:cdk:path: test-cdk/CDKMetadata/Default
+Parameters:
+  SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
