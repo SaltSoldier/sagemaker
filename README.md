@@ -11,6 +11,7 @@ sequenceDiagram
     iframe->>viewscreen: request template
     viewscreen->>iframe: html & javascript
     iframe->>dotcom: iframe ready
+    Note right of iframe: hoge \n fuga
     dotcom->>iframe: set mermaid data on iframe
     iframe->>iframe: render mermaid
 ```
